@@ -28,6 +28,12 @@ public class AudioPlayer {
      */
     private double volume = 0.5;
 
+    /**
+     * Action à exécuter quand la musique en cours se termine
+     * (par exemple passer à la suivante), ou {@code null} si aucune action n'est prévue.
+     */
+    private Runnable onEnd;
+
 
     // Méthodes
 
@@ -46,6 +52,10 @@ public class AudioPlayer {
         Media media = new Media(track.file().toUri().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(this.volume);
+        if (onEnd != null){
+            mediaPlayer.setOnEndOfMedia(onEnd);
+        }
+
         mediaPlayer.play();
     }
 
@@ -80,7 +90,7 @@ public class AudioPlayer {
     }
 
     /**
-     * Change le volume utilisé pour les musiques immédiatement.
+     * Change le volume, immédiatement pour la musique en cours et pour les suivantes.
      *
      * @param volume le nouveau volume, entre 0.0 (muet) et 1.0 (maximum)
      */
@@ -89,5 +99,15 @@ public class AudioPlayer {
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(volume);
         }
+    }
+
+    /**
+     * Définit l'action à exécuter quand une musique se termine.
+     * Elle s'applique aux musiques lancées après cet appel.
+     *
+     * @param onEnd l'action à exécuter, ou {@code null} pour n'en exécuter aucune
+     */
+    public void setOnEnd(Runnable onEnd) {
+        this.onEnd = onEnd;
     }
 }

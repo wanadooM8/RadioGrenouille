@@ -36,8 +36,9 @@ public class App extends Application {
     private static final double HAUTEUR = 704;
 
     /**
-     * Construit la fenêtre, charge la playlist du dossier « musique »
-     * et lance la lecture de la première musique.
+     * Construit la fenêtre, charge la playlist du dossier « musique »,
+     * lance la lecture de la première musique et ajoute les boutons
+     * Pause, Reprendre, Volume, Précédent et Suivant.
      *
      * @param primaryStage la fenêtre principale, fournie par JavaFX
      * @throws Exception si le dossier de musique ne peut pas être lu
