@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
@@ -29,7 +29,12 @@ public class Playlist {
      */
     private final List<Track> tracks = new ArrayList<Track>();
     /**
-     * Index de la musique en cours de lecture dans {@link #tracks}.
+     * Ordre dans lequel seront jouées les musiques : chaque case contient un index
+     * dans {@link #tracks}.
+     */
+    private final List<Integer> order = new ArrayList<Integer>();
+    /**
+     * Position de la musique en cours de lecture dans {@link #order}.
      */
     private int position = 0;
     /**
@@ -51,6 +56,7 @@ public class Playlist {
      */
     public void addTrack(Track track) {
         tracks.add(track);
+        order.add(tracks.size()-1);
     }
 
     /**
@@ -80,7 +86,7 @@ public class Playlist {
         if (isEmpty()) {
             return null;
         }
-        return tracks.get(position);
+        return tracks.get(order.get(position));
 
     }
 
@@ -156,6 +162,7 @@ public class Playlist {
         tracks.clear();
         position = 0;
         shuffle = false;
+        order.clear();
 
         // Le try-with-resources ferme le flux automatiquement à la sortie du bloc
         try (Stream<Path> files = Files.list(folder)) {
@@ -189,4 +196,43 @@ public class Playlist {
         }
         return fileName.substring(0, dot);
     }
+
+    /**
+     * Active ou désactive la lecture aléatoire, sans changer la musique en cours.
+     * En activant, les autres musiques sont mélangées et la musique en cours passe
+     * en tête de l'ordre de lecture. En désactivant, l'ordre d'ajout est rétabli et
+     * la lecture reprend à la musique en cours.
+     * Ne fait rien si le mode demandé est déjà actif ou si la playlist est vide.
+     *
+     * @param enable {@code true} pour activer l'aléatoire, {@code false} pour le désactiver
+     */
+    public void setShuffle(boolean enable){
+        if (enable == shuffle || isEmpty()){
+            return;
+        }
+
+        int currentIndex = order.get(position);
+        this.shuffle = enable;
+
+        if (enable){
+            Collections.shuffle(order);
+            order.remove(Integer.valueOf(currentIndex));
+            order.addFirst(currentIndex);
+            this.position = 0;
+        } else {
+            // Fonctionne car order contient exactement 0 à n-1, une fois chacun
+            Collections.sort(order);
+            this.position = currentIndex;
+        }
+    }
+
+    /**
+     * Indique si la lecture aléatoire est activée.
+     *
+     * @return {@code true} si l'aléatoire est actif, {@code false} sinon
+     */
+    public boolean isShuffle(){
+        return shuffle;
+    }
 }
+
