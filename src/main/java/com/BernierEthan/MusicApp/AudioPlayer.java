@@ -34,6 +34,10 @@ public class AudioPlayer {
      * (par exemple passer à la suivante), ou {@code null} si aucune action n'est prévue.
      */
     private Runnable onEnd;
+    /**
+     * Indique si une musique est en train de jouer (lancée et ni en pause, ni arrêtée).
+     */
+    private boolean playing = false;
 
 
     // Méthodes
@@ -58,6 +62,7 @@ public class AudioPlayer {
         }
 
         mediaPlayer.play();
+        playing = true;
     }
 
     /**
@@ -68,6 +73,7 @@ public class AudioPlayer {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
+        playing = false;
     }
 
     /**
@@ -78,6 +84,7 @@ public class AudioPlayer {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
+        playing = false;
     }
 
     /**
@@ -87,7 +94,27 @@ public class AudioPlayer {
     public void resume() {
         if (mediaPlayer != null) {
             mediaPlayer.play();
+            playing = true;
         }
+    }
+
+    /**
+     * Indique si une musique est en train de jouer.
+     *
+     * @return {@code true} si une musique joue, {@code false} si elle est en pause,
+     *         arrêtée ou si aucune musique n'a été lancée
+     */
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    /**
+     * Renvoie le volume actuel.
+     *
+     * @return le volume, entre 0.0 (muet) et 1.0 (maximum)
+     */
+    public double getVolume() {
+        return volume;
     }
 
     /**

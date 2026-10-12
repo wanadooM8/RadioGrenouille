@@ -94,14 +94,75 @@ public class PlayerController {
     /**
      * Appelée par le lecteur audio quand la musique en cours se termine.
      * En mode {@link RepeatMode#ONE}, relance la même musique ;
-     * sinon, passe à la suivante.
+     * sinon, passe à la suivante. Sur la dernière musique sans répétition,
+     * arrête le lecteur.
      */
     private void onTrackEnded() {
         if (playlist.getRepeatMode() == RepeatMode.ONE) {
             play();
+        } else if (playlist.next()) {
+            audioPlayer.play(playlist.current());
         } else {
-            playNext();
+            // Fin de la playlist sans répétition : on s'arrête pour que le bouton repasse sur « lecture »
+            audioPlayer.stop();
         }
+    }
+
+    /**
+     * Met en pause si une musique joue, sinon reprend la lecture.
+     * Ne fait rien si la playlist est vide.
+     */
+    public void togglePlayPause() {
+        if (audioPlayer.isPlaying()) {
+            pause();
+        } else {
+            resume();
+        }
+    }
+
+    /**
+     * Indique si une musique est en train de jouer.
+     *
+     * @return {@code true} si une musique joue, {@code false} sinon
+     */
+    public boolean isPlaying() {
+        return audioPlayer.isPlaying();
+    }
+
+    /**
+     * Renvoie la musique courante de la playlist.
+     *
+     * @return la musique courante, ou {@code null} si la playlist est vide
+     */
+    public Track getCurrentTrack() {
+        return playlist.current();
+    }
+
+    /**
+     * Renvoie le volume actuel du lecteur audio.
+     *
+     * @return le volume, entre 0.0 (muet) et 1.0 (maximum)
+     */
+    public double getVolume() {
+        return audioPlayer.getVolume();
+    }
+
+    /**
+     * Indique si la lecture aléatoire est activée.
+     *
+     * @return {@code true} si l'aléatoire est actif, {@code false} sinon
+     */
+    public boolean isShuffle() {
+        return playlist.isShuffle();
+    }
+
+    /**
+     * Renvoie le mode de répétition actuel.
+     *
+     * @return le mode de répétition de la playlist
+     */
+    public RepeatMode getRepeatMode() {
+        return playlist.getRepeatMode();
     }
 
     /**
