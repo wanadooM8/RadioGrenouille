@@ -11,6 +11,7 @@ package com.BernierEthan.MusicApp;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 /**
  * Lecteur audio : joue une musique à la fois et permet de la mettre en pause,
@@ -110,4 +111,48 @@ public class AudioPlayer {
     public void setOnEnd(Runnable onEnd) {
         this.onEnd = onEnd;
     }
+
+    /**
+     * Donne la position de lecture dans la musique en cours.
+     *
+     * @return le temps écoulé en secondes, ou 0 si aucune musique n'a été lancée
+     */
+    public double getCurrentSeconds(){
+        if (mediaPlayer == null){
+            return 0;
+        }
+        return mediaPlayer.getCurrentTime().toSeconds();
+    }
+
+    /**
+     * Donne la durée totale de la musique en cours.
+     * La durée reste inconnue tant que JavaFX n'a pas fini de lire le fichier.
+     *
+     * @return la durée en secondes, ou 0 si aucune musique n'a été lancée
+     *         ou si sa durée n'est pas encore connue
+     */
+    public double getDurationSeconds(){
+        if (mediaPlayer == null){
+            return 0;
+        }
+        Duration total = mediaPlayer.getTotalDuration();
+        if (total.isUnknown() || total.isIndefinite()){
+            return 0;
+        }
+        return total.toSeconds();
+    }
+
+    /**
+     * Déplace la lecture de la musique en cours à la position donnée.
+     * Ne fait rien si aucune musique n'a été lancée.
+     *
+     * @param seconds la position visée, en secondes depuis le début de la musique
+     */
+    public void seek(double seconds){
+        if (mediaPlayer == null){
+            return;
+        }
+        mediaPlayer.seek(Duration.seconds(seconds));
+    }
 }
+

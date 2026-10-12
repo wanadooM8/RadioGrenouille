@@ -104,4 +104,49 @@ public class PlayerController {
         }
     }
 
+    /**
+     * Active la lecture aléatoire si elle est désactivée, et inversement.
+     * La musique en cours ne change pas.
+     */
+    public void toggleShuffle(){
+        playlist.setShuffle(!playlist.isShuffle());
+    }
+
+    /**
+     * Passe au mode de répétition suivant, dans l'ordre de {@link RepeatMode} :
+     * {@link RepeatMode#OFF}, puis {@link RepeatMode#ALL}, puis {@link RepeatMode#ONE},
+     * puis de nouveau {@link RepeatMode#OFF}.
+     */
+    public void cycleRepeatMode(){
+        RepeatMode[] modes = RepeatMode.values();
+        int next = (playlist.getRepeatMode().ordinal() + 1) % modes.length;
+        playlist.setRepeatMode(modes[next]);
+    }
+
+    /**
+     * Donne la position de lecture dans la musique en cours.
+     *
+     * @return le temps écoulé en secondes, ou 0 si aucune musique n'a été lancée
+     */
+    public double getCurrentSeconds(){
+        return audioPlayer.getCurrentSeconds();
+    }
+
+    /**
+     * Donne la durée totale de la musique en cours.
+     *
+     * @return la durée en secondes, ou 0 si elle n'est pas encore connue
+     */
+    public double getDurationSeconds(){
+        return audioPlayer.getDurationSeconds();
+    }
+
+    /**
+     * Déplace la lecture de la musique en cours à la position donnée.
+     *
+     * @param seconds la position visée, en secondes depuis le début de la musique
+     */
+    public void seek(double seconds){
+        audioPlayer.seek(seconds);
+    }
 }

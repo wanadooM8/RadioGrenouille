@@ -38,7 +38,7 @@ public class App extends Application {
     /**
      * Construit la fenêtre, charge la playlist du dossier « musique »,
      * lance la lecture de la première musique et ajoute les boutons
-     * Pause, Reprendre, Volume, Précédent et Suivant.
+     * Pause, Reprendre, Volume, Précédent, Suivant, Temps, +10 s, Aléatoire et Répéter.
      *
      * @param primaryStage la fenêtre principale, fournie par JavaFX
      * @throws Exception si le dossier de musique ne peut pas être lu
@@ -91,12 +91,58 @@ public class App extends Application {
         buttonPrevious.setLayoutX(250);
         buttonPrevious.setLayoutY(50);
 
+        Button buttonTemps = new Button("Temps");
+        buttonTemps.setOnAction(e -> System.out.println("Temps : "
+                + formatTime(playerController.getCurrentSeconds()) + " / "
+                + formatTime(playerController.getDurationSeconds())));
+
+        Button buttonAvance = new Button("+10 s");
+        buttonAvance.setOnAction(e -> playerController.seek(playerController.getCurrentSeconds() + 10));
+
+        Button buttonAleatoire = new Button("Aléatoire");
+        buttonAleatoire.setOnAction(e -> {
+            playerController.toggleShuffle();
+            System.out.println("Aléatoire : " + (playlist.isShuffle() ? "activé" : "désactivé"));
+        });
+
+        Button buttonRepeter = new Button("Répéter");
+        buttonRepeter.setOnAction(e -> {
+            playerController.cycleRepeatMode();
+            System.out.println("Répétition : " + playlist.getRepeatMode());
+        });
+
         buttonNext.setLayoutX(350);
         buttonNext.setLayoutY(50);
-        racine.getChildren().addAll(buttonPause, buttonReprendre, buttonVolume, buttonPrevious, buttonNext);
+
+        buttonTemps.setLayoutX(50);
+        buttonTemps.setLayoutY(100);
+
+        buttonAvance.setLayoutX(150);
+        buttonAvance.setLayoutY(100);
+
+        buttonAleatoire.setLayoutX(250);
+        buttonAleatoire.setLayoutY(100);
+
+        buttonRepeter.setLayoutX(350);
+        buttonRepeter.setLayoutY(100);
+        racine.getChildren().addAll(buttonPause, buttonReprendre, buttonVolume, buttonPrevious, buttonNext,
+                buttonTemps, buttonAvance, buttonAleatoire, buttonRepeter);
 
 
         primaryStage.show(); // affiche la fenêtre à l'écran
+    }
+
+    /**
+     * Met une durée au format m:ss (par exemple 83.4 secondes donne "1:23").
+     *
+     * @param seconds la durée en secondes
+     * @return la durée formatée en minutes et secondes
+     */
+    private static String formatTime(double seconds) {
+        int total = (int) seconds;
+        int minutes = total / 60;
+        int secondes = total % 60;
+        return String.format("%d:%02d", minutes, secondes);
     }
 
     /**
