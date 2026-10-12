@@ -41,7 +41,7 @@ public class App extends Application {
         // La logique : playlist, lecteur audio et contrôleur
         Playlist playlist = new Playlist();
         try {
-            playlist.loadFolder(Path.of(UiConstants.MUSIC_FOLDER));
+            playlist.loadFolder(findMusicFolder());
         } catch (IOException e) {
             // Dossier absent : la playlist reste vide et l'interface affiche un message
             System.err.println("Dossier de musique introuvable : " + UiConstants.MUSIC_FOLDER);
@@ -95,6 +95,18 @@ public class App extends Application {
             n++;
         }
         return n;
+    }
+
+    /**
+     * Trouve le dossier de musique : à côté de l'exe si l'appli est
+     * lancée par jpackage, sinon dans le dossier du projet.
+     */
+    private static Path findMusicFolder() {
+        String exePath = System.getProperty("jpackage.app-path");
+        if (exePath == null) {
+            return Path.of("musique");
+        }
+        return Path.of(exePath).getParent().resolve("musique");
     }
 
     /**
